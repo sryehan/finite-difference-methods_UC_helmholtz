@@ -26,10 +26,6 @@ body {
   line-height: 1.8;
 }
 
-/* ─── MATLAB COLOR PALETTE ─────────────────────────────── */
-/* keyword=blue, number=dark-green, comment=green italic,
-   string=dark-red, function=dark-blue, operator=black    */
-
 /* ─── NAV ──────────────────────────────────────────────── */
 nav {
   position: sticky; top:0; z-index:200;
@@ -204,15 +200,7 @@ td {
 }
 td:first-child { font-family:'Courier New',monospace; font-size:.82rem; color:#111; }
 
-/* ─── MATLAB CODE ─────────────────────────────────────────
-   MATLAB official colors:
-   keywords    → #0000ff (blue, bold)
-   numbers     → #000000 (plain)
-   comments    → #228b22 (green, italic)
-   strings     → #a020f0 (purple)
-   functions   → #000080 (navy / dark-blue)
-   operators   → #000000
-   ───────────────────────────────────────────────────────── */
+/* ─── MATLAB CODE ───────────────────────────────────────── */
 .code-wrap {
   border:1px solid #ccc;
   border-radius:2px;
@@ -234,11 +222,11 @@ pre {
   font-family:'Courier New',monospace; font-size:.8rem;
   line-height:1.72; background:#fff; color:#000;
 }
-.mk  { color:#0000ff; font-weight:bold; }           /* keyword */
-.mc  { color:#228b22; font-style:italic; }          /* comment */
-.ms  { color:#a020f0; }                             /* string  */
-.mf  { color:#000080; }                             /* function/builtin */
-.mn  { color:#000000; }                             /* number (plain) */
+.mk  { color:#0000ff; font-weight:bold; }
+.mc  { color:#228b22; font-style:italic; }
+.ms  { color:#a020f0; }
+.mf  { color:#000080; }
+.mn  { color:#000000; }
 
 /* ─── IMAGES ─────────────────────────────────────────────── */
 .img-wrap { margin:.4rem 0; }
@@ -267,7 +255,7 @@ pre {
   border:1px solid #005f9e; padding:.2rem .55rem; font-style:normal;
 }
 .pdf-link:hover { background:#f0f4ff; }
-iframe.pdf-frame { width:100%; height:720px; border:none; display:block; }
+.pdf-frame { width:100%; height:720px; border:none; display:block; }
 
 /* ─── FOOTER ─────────────────────────────────────────────── */
 footer {
@@ -291,9 +279,7 @@ p.body-text { font-size:.95rem; color:#333; margin-bottom:.8rem; line-height:1.8
 </head>
 <body>
 
-<!-- ════════════════════════════════════════════
-     NAV
-═════════════════════════════════════════════ -->
+<!-- NAV -->
 <nav>
   <div class="nav-brand">
     <img src="uc.png"      alt="University of Coimbra logo">
@@ -309,9 +295,7 @@ p.body-text { font-size:.95rem; color:#333; margin-bottom:.8rem; line-height:1.8
   </ul>
 </nav>
 
-<!-- ════════════════════════════════════════════
-     HERO
-═════════════════════════════════════════════ -->
+<!-- HERO -->
 <div class="hero">
   <div class="hero-kicker">Computational Modeling · Erasmus Mundus WAVES / MEAECS</div>
   <h1>Finite Difference &amp; Element Methods</h1>
@@ -342,12 +326,9 @@ p.body-text { font-size:.95rem; color:#333; margin-bottom:.8rem; line-height:1.8
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     MAIN
-═════════════════════════════════════════════ -->
 <main>
 
-<!-- ── OVERVIEW ─────────────────────────────── -->
+<!-- OVERVIEW -->
 <section id="overview">
   <div class="section-kicker">00 — Overview</div>
   <h2>Problems Covered</h2>
@@ -395,14 +376,11 @@ p.body-text { font-size:.95rem; color:#333; margin-bottom:.8rem; line-height:1.8
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     HEAT 1D
-════════════════════════════════════════════════════════════ -->
+<!-- HEAT 1D -->
 <section id="heat1d">
   <div class="section-kicker">01 — Heat Conduction</div>
   <h2>1D Heat Conduction</h2>
 
-  <!-- STEADY -->
   <div class="prob">
     <div class="prob-header">
       <div class="prob-num">01</div>
@@ -415,25 +393,21 @@ p.body-text { font-size:.95rem; color:#333; margin-bottom:.8rem; line-height:1.8
     <div class="two-col">
       <div>
         <p class="body-text">The steady-state ODE is defined on \(x \in [0,\, 0.5]\,\text{m}\) with variable thermal conductivity:</p>
-
         <div class="eq-box">
           $$-\frac{d}{dx}\!\left[\lambda(x)\,\frac{dT}{dx}\right] = q(x)$$
           $$\lambda(x) = 0.5 + 2.0\,x \quad (\text{W}/^{\circ}\text{C}\cdot\text{m})$$
         </div>
-
         <p class="body-text"><strong>Boundary Conditions:</strong></p>
         <table>
           <tr><th>Boundary</th><th>Type</th><th>Value</th></tr>
           <tr><td>x = 0</td><td>Dirichlet</td><td>T = 200 °C</td></tr>
           <tr><td>x = L</td><td>Neumann</td><td>q = 10 W/m²</td></tr>
         </table>
-
-        <p class="body-text mt1">The Neumann condition at the right boundary is discretised using a backward finite-difference approximation of the first derivative:</p>
+        <p class="body-text mt1">The Neumann condition at the right boundary is discretised using a backward finite-difference approximation:</p>
         <div class="eq-box">
           $$\left.\lambda\,\frac{dT}{dx}\right|_{x=L} \approx \lambda_n\,\frac{T_n - T_{n-1}}{\Delta x} = q_{\text{right}}$$
         </div>
       </div>
-
       <div>
         <div class="code-wrap">
           <div class="code-head"><span class="code-lang">MATLAB</span></div>
@@ -465,9 +439,8 @@ T = A\B;
         </div>
       </div>
     </div>
-  </div><!-- /prob -->
+  </div>
 
-  <!-- TRANSIENT -->
   <div class="prob">
     <div class="prob-header">
       <div class="prob-num">02</div>
@@ -483,15 +456,12 @@ T = A\B;
         <div class="eq-box">
           $$\rho C_p\,\frac{\partial T}{\partial t} = \lambda\,\frac{\partial^2 T}{\partial x^2}$$
         </div>
-
         <p class="body-text">Stability requires the CFL condition:</p>
         <div class="eq-box">
           $$\Delta t \;\leq\; \frac{1}{2}\,\frac{\Delta x^2}{\alpha}, \qquad \alpha = \frac{\lambda}{\rho C_p}$$
         </div>
-
         <p class="body-text"><strong>Parameters:</strong> \(\lambda=2\) W/°C·m, \(\rho=200\) kg/m³, \(C_p=1000\) J/kg·°C. Initial condition \(T_0=20\,^{\circ}\text{C}\) throughout. Neumann BC at right: \(q=100\) W/m².</p>
       </div>
-
       <div>
         <div class="code-wrap">
           <div class="code-head"><span class="code-lang">MATLAB — Explicit Time Loop</span></div>
@@ -517,12 +487,10 @@ Ti0 = T0; <span class="mc">% initial condition</span>
         </div>
       </div>
     </div>
-  </div><!-- /prob -->
+  </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     HEAT 2D
-════════════════════════════════════════════════════════════ -->
+<!-- HEAT 2D -->
 <section id="heat2d">
   <div class="section-kicker">02 — Heat Conduction</div>
   <h2>2D Steady-State Heat Conduction</h2>
@@ -542,7 +510,6 @@ Ti0 = T0; <span class="mc">% initial condition</span>
         <div class="eq-box">
           $$\frac{\partial^2 T}{\partial x^2} + \frac{\partial^2 T}{\partial y^2} = 0$$
         </div>
-
         <table>
           <tr><th>Boundary</th><th>Type</th><th>Value</th></tr>
           <tr><td>Left (x = 0)</td><td>Dirichlet</td><td>T = 20 °C</td></tr>
@@ -550,13 +517,11 @@ Ti0 = T0; <span class="mc">% initial condition</span>
           <tr><td>Right (x = L<sub>x</sub>)</td><td>Neumann</td><td>q = 0 W/m²</td></tr>
           <tr><td>Bottom (y = 0)</td><td>Neumann</td><td>q = 0 W/m²</td></tr>
         </table>
-
         <p class="body-text mt1">Heat fluxes are computed post-solution using central differences at internal nodes:</p>
         <div class="eq-box">
           $$q_x = -\lambda\,\frac{T_{i+1,j}-T_{i-1,j}}{2\,\Delta x}, \qquad q_y = -\lambda\,\frac{T_{i,j+1}-T_{i,j-1}}{2\,\Delta y}$$
         </div>
       </div>
-
       <div>
         <div class="img-wrap">
           <img src="heat_1.png" alt="2D Temperature Distribution">
@@ -565,7 +530,6 @@ Ti0 = T0; <span class="mc">% initial condition</span>
       </div>
     </div>
 
-    <!-- Full-width code -->
     <div class="mt2">
       <div class="code-wrap">
         <div class="code-head"><span class="code-lang">MATLAB — 2D FD Assembly Loop</span></div>
@@ -598,14 +562,11 @@ T = A\B;</pre>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     HELMHOLTZ
-════════════════════════════════════════════════════════════ -->
+<!-- HELMHOLTZ -->
 <section id="helmholtz">
   <div class="section-kicker">03 — Acoustics</div>
   <h2>Helmholtz Equation — Finite Differences</h2>
 
-  <!-- 1D -->
   <div class="prob">
     <div class="prob-header">
       <div class="prob-num">04</div>
@@ -631,7 +592,6 @@ T = A\B;</pre>
           $$P_{\text{exact}}(x) = C\,e^{-iKx} + D\,e^{iK(x-L)}$$
         </div>
       </div>
-
       <div>
         <div class="code-wrap">
           <div class="code-head"><span class="code-lang">MATLAB — Helmholtz 1D</span></div>
@@ -658,9 +618,8 @@ P = A\B;</pre>
         </div>
       </div>
     </div>
-  </div><!-- /prob -->
+  </div>
 
-  <!-- 2D -->
   <div class="prob">
     <div class="prob-header">
       <div class="prob-num">05</div>
@@ -686,7 +645,6 @@ P = A\B;</pre>
         </table>
         <p class="body-text mt1">The complex pressure field is visualised as real, imaginary, and absolute values using <code>trisurf</code> with jet colormap.</p>
       </div>
-
       <div>
         <div class="code-wrap">
           <div class="code-head"><span class="code-lang">MATLAB — 2D Helmholtz Assembly</span></div>
@@ -719,12 +677,10 @@ P = A\B;</pre>
         </div>
       </div>
     </div>
-  </div><!-- /prob -->
+  </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     FEM
-════════════════════════════════════════════════════════════ -->
+<!-- FEM -->
 <section id="fem">
   <div class="section-kicker">04 — FEM Acoustics</div>
   <h2>2D Acoustic Attenuator — Helmholtz via FEM</h2>
@@ -747,7 +703,6 @@ P = A\B;</pre>
 
     <p class="body-text">Excitation frequency: \(f = 500 + A_1{\times}10 + B_1 = 565\) Hz. Normal inlet velocity \(v_n = 1\) mm/s; perfect absorption at outlet.</p>
 
-    <!-- Images row 1 -->
     <div class="img-grid-2">
       <div class="img-wrap">
         <img src="q1.png" alt="Attenuator geometry">
@@ -759,7 +714,6 @@ P = A\B;</pre>
       </div>
     </div>
 
-    <!-- Images row 2 -->
     <div class="img-grid-2">
       <div class="img-wrap">
         <img src="m1.png" alt="FEM mesh Step 5">
@@ -771,7 +725,6 @@ P = A\B;</pre>
       </div>
     </div>
 
-    <!-- 3D image full width -->
     <div class="img-grid-1">
       <div class="img-wrap">
         <img src="three.png" alt="3D pressure surface">
@@ -779,10 +732,8 @@ P = A\B;</pre>
       </div>
     </div>
 
-    <!-- Mesh refinement note -->
     <p class="body-text mt1">Mesh refinement was conducted iteratively from a coarse mesh (\(h = 3\times 0.0607 = 0.182\) m) to Step 5 (\(h \approx \lambda/10\)). The Helmholtz number \(kh = 10.35 \times 0.0607 \approx 0.63 \ll 1\) confirms low numerical dispersion at the finest level.</p>
 
-    <!-- TL / IL table -->
     <h3 class="mt3">Transmission Loss and Insertion Loss — Summary</h3>
     <table class="mt1">
       <tr>
@@ -804,24 +755,28 @@ P = A\B;</pre>
       \(\text{IL} = \text{SPL}_{\text{out, without att.}} - \text{SPL}_{\text{out, with att.}}\)
     </p>
 
-    <!-- PDF -->
+    <!-- ══════════════════════════════════════════
+         PDF SECTION — Google Docs Viewer fix
+         iframe কাজ না করায় Google Docs Viewer দিয়ে replace করা হয়েছে
+    ═══════════════════════════════════════════ -->
     <h3 class="mt3">Full Written Report</h3>
     <div class="pdf-wrap">
       <div class="pdf-head">
         <span class="pdf-title">Computational Modeling Work 2 — Written Report.pdf</span>
         <a href="report.pdf" target="_blank" class="pdf-link">Open in new tab ↗</a>
       </div>
-      <iframe class="pdf-frame" src="report.pdf" title="Full Report PDF"></iframe>
+      <iframe class="pdf-frame"
+        src="https://docs.google.com/gview?url=https://sryehan.github.io/finite-difference-methods_UC_helmholtz/report.pdf&embedded=true"
+        title="Full Report PDF">
+      </iframe>
     </div>
 
-  </div><!-- /prob -->
+  </div>
 </section>
 
 </main>
 
-<!-- ════════════════════════════════════════════
-     FOOTER
-═════════════════════════════════════════════ -->
+<!-- FOOTER -->
 <footer>
   <div class="foot-left">
     <em>Shahariar Ryehan — UC 2024161225</em><br>
