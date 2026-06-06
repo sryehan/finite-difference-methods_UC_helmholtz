@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finite Difference Methods — UC 2024/2025</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f9f9f9;
+    --border: #ddd;
+    --accent: #1a3a6b;
+    --accent2: #b5312c;
+    --text: #1a1a1a;
+    --muted: #555;
+    --heat: #b5312c;
+    --acoustic: #1a3a6b;
+    --fem: #5a3e8a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 3rem;
+    background: #fff;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .nav-logo {
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    font-style: italic;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* ── HERO ── */
+  .hero {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 5rem 3rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-tag {
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: bold;
+    line-height: 1.15;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 680px;
+    margin-bottom: 2.5rem;
+    font-style: italic;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .meta-item { display: flex; flex-direction: column; gap: 0.1rem; }
+
+  .meta-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .meta-value { font-size: 0.95rem; }
+
+  /* ── SECTION ── */
+  section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: bold;
+    color: var(--accent);
+    margin-bottom: 2.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+
+  p {
+    font-size: 0.97rem;
+    color: var(--muted);
+    margin-bottom: 0.9rem;
+    line-height: 1.8;
+  }
+
+  /* ── OVERVIEW CARDS ── */
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .project-card {
+    background: #fff;
+    padding: 1.8rem;
+  }
+
+  .card-number {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .card-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+  }
+
+  .dot-heat { background: var(--heat); }
+  .dot-acoustic { background: var(--acoustic); }
+  .dot-fem { background: var(--fem); }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── PROBLEM BLOCKS ── */
+  .problem-block {
+    margin-bottom: 4rem;
+    padding-bottom: 4rem;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .problem-block:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .problem-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .problem-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--border);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .type-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.6rem;
+    margin-bottom: 0.4rem;
+    font-family: 'Courier New', monospace;
+    border: 1px solid;
+  }
+
+  .badge-heat   { color: var(--heat);     border-color: var(--heat);     background: #fff5f5; }
+  .badge-acoustic { color: var(--acoustic); border-color: var(--acoustic); background: #f0f4ff; }
+  .badge-fem    { color: var(--fem);      border-color: var(--fem);      background: #f8f4ff; }
+
+  .problem-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .problem-body { grid-template-columns: 1fr; }
+    nav { padding: 0.8rem 1.2rem; }
+    .hero, section { padding-left: 1.2rem; padding-right: 1.2rem; }
+    .nav-links { gap: 1rem; }
+  }
+
+  /* ── EQUATIONS ── */
+  .equation-box {
+    background: #f7f7f7;
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: #222;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: #f7f7f7;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    background: #efefef;
+  }
+
+  .code-lang {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  pre {
+    padding: 1.2rem;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: #333;
+  }
+
+  .kw  { color: #1a3a6b; font-weight: bold; }
+  .cm  { color: #888; font-style: italic; }
+  .num { color: #b5312c; }
+  .fn  { color: #5a3e8a; }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 1rem 0;
+  }
+
+  th {
+    font-size: 0.72rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.5rem 0.9rem;
+    border-bottom: 2px solid var(--accent);
+    text-align: left;
+    background: #f5f5f5;
+  }
+
+  td {
+    padding: 0.5rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  td:first-child {
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+
+  /* ── IMAGES ── */
+  .result-image {
+    width: 100%;
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  .image-caption {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.4rem;
+    text-align: center;
+  }
+
+  .image-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .image-grid.single { grid-template-columns: 1fr; }
+
+  /* ── PDF ── */
+  .pdf-container {
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .pdf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: #f5f5f5;
+  }
+
+  .pdf-title {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .pdf-link {
+    font-size: 0.78rem;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    padding: 0.25rem 0.6rem;
+  }
+
+  .pdf-link:hover { background: #f0f4ff; }
+
+  iframe.pdf-frame {
+    width: 100%;
+    height: 700px;
+    border: none;
+    display: block;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-top: 2px solid var(--accent);
+  }
+
+  .footer-left {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.8;
+  }
+
+  .footer-right a {
+    font-size: 0.85rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .footer-right a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">Finite Difference & Element Methods — UC 2024/2025</span>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#heat-1d">Heat 1D</a></li>
+    <li><a href="#heat-2d">Heat 2D</a></li>
+    <li><a href="#helmholtz">Helmholtz</a></li>
+    <li><a href="#fem">FEM</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Computational Modeling · 2024 / 2025</div>
+  <h1>Finite Difference &amp; Element Methods</h1>
+  <p class="hero-desc">
+    Numerical simulation of heat conduction and acoustic wave propagation using finite difference and finite element approaches — solving the Laplace, Poisson, and Helmholtz equations in 1D and 2D domains.
+  </p>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <span class="meta-label">Authors</span>
+      <span class="meta-value">Shahariar Ryehan &amp; Pranav Prakasan</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Institution</span>
+      <span class="meta-value">Universidade de Coimbra</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Course</span>
+      <span class="meta-value">Computational Modeling</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Methods</span>
+      <span class="meta-value">FD &middot; FEM &middot; MATLAB</span>
+    </div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="section-label">00 — Overview</div>
+  <h2>Problems Covered</h2>
+  <div class="project-grid">
+    <div class="project-card">
+      <div class="card-number"><span class="card-dot dot-heat"></span> 01 · Heat Conduction</div>
+      <div class="card-title">1D Steady-State</div>
+      <p class="card-desc">Variable thermal conductivity λ(x) = 0.5 + 2x. Dirichlet left, Neumann right. Solved via FD matrix system.</p>
+      <div class="card-tags">
+        <span class="tag">Laplace</span><span class="tag">Dirichlet</span><span class="tag">Neumann</span><span class="tag">1D</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="card-number"><span class="card-dot dot-heat"></span> 02 · Heat Conduction</div>
+      <div class="card-title">1D Transient</div>
+      <p class="card-desc">Explicit Euler time-marching. CFL stability condition. Temperature evolution at right boundary node.</p>
+      <div class="card-tags">
+        <span class="tag">Parabolic PDE</span><span class="tag">Explicit</span><span class="tag">CFL</span><span class="tag">1D</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="card-number"><span class="card-dot dot-heat"></span> 03 · Heat Conduction</div>
+      <div class="card-title">2D Steady-State</div>
+      <p class="card-desc">3.5 × 2.0 m domain. Known temperatures on left/top, zero flux on right/bottom. Heat flux vectors via central differences.</p>
+      <div class="card-tags">
+        <span class="tag">Laplace 2D</span><span class="tag">Quiver</span><span class="tag">Mixed BC</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="card-number"><span class="card-dot dot-acoustic"></span> 04 · Acoustics</div>
+      <div class="card-title">Helmholtz 1D &amp; 2D</div>
+      <p class="card-desc">Frequency-domain acoustic pressure. 1D closed-form comparison. 2D structured grid FD.</p>
+      <div class="card-tags">
+        <span class="tag">Helmholtz</span><span class="tag">Complex</span><span class="tag">1D · 2D</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="card-number"><span class="card-dot dot-fem"></span> 05 · FEM Acoustics</div>
+      <div class="card-title">2D Attenuator</div>
+      <p class="card-desc">Helmholtz via MATLAB PDE Modeler. TL and IL computed across octave bands 125–2000 Hz.</p>
+      <div class="card-tags">
+        <span class="tag">FEM</span><span class="tag">TL · IL</span><span class="tag">Octave Bands</span><span class="tag">SPL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HEAT 1D -->
+<section id="heat-1d">
+  <div class="section-label">01 — Heat Conduction</div>
+  <h2>1D Steady-State Heat Conduction</h2>
+
+  <div class="problem-block">
+    <div class="problem-header">
+      <div class="problem-number">01</div>
+      <div>
+        <div class="type-badge badge-heat">Steady · 1D</div>
+        <h3>Variable Conductivity, Mixed Boundary Conditions</h3>
+      </div>
+    </div>
+    <div class="problem-body">
+      <div class="problem-text">
+        <p>Solve the steady-state heat conduction ODE over x ∈ [0, 0.5] with variable thermal conductivity:</p>
+        <div class="equation-box">−d/dx [ λ(x) · dT/dx ] = q(x)
+λ(x) = 0.5 + 2.0x  (W/°C·m)</div>
+        <p><strong>Boundary Conditions:</strong></p>
+        <table>
+          <tr><th>Boundary</th><th>Type</th><th>Value</th></tr>
+          <tr><td>x = 0</td><td>Dirichlet</td><td>T = 200 °C</td></tr>
+          <tr><td>x = L</td><td>Neumann</td><td>q = 10 W/m²</td></tr>
+        </table>
+        <p>The FD system is assembled by looping through nodes. Dirichlet imposed directly; Neumann via backward differences; internal nodes via standard second-order scheme.</p>
+      </div>
+      <div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">MATLAB</span></div>
+          <pre><span class="cm">% Domain & conductivity</span>
+L = <span class="num">0.4</span>; npts = <span class="num">5</span>;
+dx = L/(npts-<span class="num">1</span>);
+x = <span class="num">0</span>:dx:dx*(npts-<span class="num">1</span>);
+lambda = <span class="num">0.5</span> + <span class="num">2.0</span>*x;
+
+A = <span class="fn">zeros</span>(npts); B = <span class="fn">zeros</span>(npts,<span class="num">1</span>);
+
+<span class="cm">% Dirichlet: left</span>
+A(<span class="num">1</span>,<span class="num">1</span>)=<span class="num">1</span>; B(<span class="num">1</span>)=temp_left;
+
+<span class="cm">% Neumann: right (backward diff)</span>
+A(<span class="kw">end</span>,<span class="kw">end</span>-<span class="num">1</span>:<span class="kw">end</span>) = ...
+  -lambda(<span class="kw">end</span>)*[-<span class="num">1</span>/dx <span class="num">1</span>/dx];
+B(<span class="kw">end</span>) = flux_right;
+
+<span class="cm">% Internal nodes</span>
+<span class="kw">for</span> ii = <span class="num">2</span>:npts-<span class="num">1</span>
+  A(ii,ii-<span class="num">1</span>:ii+<span class="num">1</span>) = ...
+    -[<span class="num">1</span> -<span class="num">2</span> <span class="num">1</span>]/dx^<span class="num">2</span>*lambda(ii);
+<span class="kw">end</span>
+T = A\B;</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1D TRANSIENT -->
+  <div class="problem-block">
+    <div class="problem-header">
+      <div class="problem-number">02</div>
+      <div>
+        <div class="type-badge badge-heat">Transient · 1D</div>
+        <h3>Explicit Time-Marching with CFL Stability</h3>
+      </div>
+    </div>
+    <div class="problem-body">
+      <div class="problem-text">
+        <p>Parabolic PDE governing transient heat diffusion, solved with explicit forward Euler in time and second-order central differences in space:</p>
+        <div class="equation-box">ρCp · ∂T/∂t = λ · ∂²T/∂x²
+
+Stability: dt ≤ (1/2) · dx² / α
+where α = λ / (ρ · Cp)</div>
+        <p><strong>Parameters:</strong> λ = 2 W/°C·m, ρ = 200 kg/m³, Cp = 1000 J/kg·°C. Initial condition T₀ = 20 °C throughout. Neumann BC at right: flux = 100 W/m².</p>
+        <p>Temperature is marched through 200 time steps, tracking evolution at the rightmost node.</p>
+      </div>
+      <div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">MATLAB — Time Loop</span></div>
+          <pre><span class="cm">% CFL-stable time step</span>
+alfa = lambda/rho/Cp;
+dt = (<span class="num">1</span>/<span class="num">2.5</span>)*dx^<span class="num">2</span>/alfa;
+
+Ti0 = T0;
+
+<span class="kw">for</span> itime = <span class="num">1</span>:nsteps
+  <span class="kw">for</span> ipos = <span class="num">2</span>:npts-<span class="num">1</span>
+    Ti1(ipos) = Ti0(ipos) + dt*alfa*...
+      (Ti0(ipos-<span class="num">1</span>)-<span class="num">2</span>*Ti0(ipos)+...
+       Ti0(ipos+<span class="num">1</span>))/dx^<span class="num">2</span>;
+  <span class="kw">end</span>
+  Ti1(<span class="num">1</span>) = temp_left;
+  Ti1(<span class="kw">end</span>) = flux_right*dx/...
+    (-lambda)+Ti1(<span class="kw">end</span>-<span class="num">1</span>);
+  Ti0 = Ti1;
+<span class="kw">end</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HEAT 2D -->
+<section id="heat-2d">
+  <div class="section-label">02 — Heat Conduction</div>
+  <h2>2D Steady-State Heat Conduction</h2>
+
+  <div class="problem-block">
+    <div class="problem-header">
+      <div class="problem-number">03</div>
+      <div>
+        <div class="type-badge badge-heat">Steady · 2D</div>
+        <h3>3.5 × 2.0 m Domain — Temperature Distribution &amp; Heat Flux</h3>
+      </div>
+    </div>
+    <div class="problem-body">
+      <div class="problem-text">
+        <p>The 2D Laplace equation is solved over a rectangular domain with mixed boundary conditions. λ = 0.5 W/°C·m.</p>
+        <div class="equation-box">∂²T/∂x² + ∂²T/∂y² = 0</div>
+        <table>
+          <tr><th>Boundary</th><th>Type</th><th>Value</th></tr>
+          <tr><td>Left (x=0)</td><td>Dirichlet</td><td>T = 20 °C</td></tr>
+          <tr><td>Top (y=Ly)</td><td>Dirichlet</td><td>T = 10 °C</td></tr>
+          <tr><td>Right (x=Lx)</td><td>Neumann</td><td>q = 0 W/m²</td></tr>
+          <tr><td>Bottom (y=0)</td><td>Neumann</td><td>q = 0 W/m²</td></tr>
+        </table>
+        <p>Heat fluxes qx and qy are computed post-solution using central differences at internal nodes.</p>
+      </div>
+      <div>
+        <img src="images/heat_1.png" alt="2D Temperature Distribution" class="result-image">
+        <div class="image-caption">Fig. 1 — Temperature distribution (°C), hotmap colorscale</div>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;">
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">MATLAB — 2D Assembly Loop</span></div>
+        <pre><span class="kw">for</span> ii = <span class="num">1</span>:nptx
+  <span class="kw">for</span> ij = <span class="num">1</span>:npty
+    center = (ii-<span class="num">1</span>)*npty + ij;
+    left=center-npty; right=center+npty;
+    up=center+<span class="num">1</span>;   down=center-<span class="num">1</span>;
+
+    <span class="kw">if</span>     x(center)==<span class="num">0</span>    <span class="cm">% Left: Dirichlet</span>
+      A(center,center)=<span class="num">1</span>; B(center)=<span class="num">20</span>;
+    <span class="kw">elseif</span> y(center)==Ly   <span class="cm">% Top: Dirichlet</span>
+      A(center,center)=<span class="num">1</span>; B(center)=<span class="num">10</span>;
+    <span class="kw">elseif</span> x(center)==Lx   <span class="cm">% Right: Neumann</span>
+      A(center,[left center])=-lambda*[-<span class="num">1</span> <span class="num">1</span>]/dx;
+    <span class="kw">elseif</span> y(center)==<span class="num">0</span>    <span class="cm">% Bottom: Neumann</span>
+      A(center,[center up])=-lambda*[-<span class="num">1</span> <span class="num">1</span>]/dy;
+    <span class="kw">else</span>                    <span class="cm">% Interior: PDE</span>
+      A(center,[left center right])=...
+        -lambda*[<span class="num">1</span> -<span class="num">2</span> <span class="num">1</span>]/dx^<span class="num">2</span>;
+      A(center,[down center up])=...
+        A(center,[down center up])...
+        -lambda*[<span class="num">1</span> -<span class="num">2</span> <span class="num">1</span>]/dy^<span class="num">2</span>;
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span>
+T = A\B;</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HELMHOLTZ -->
+<section id="helmholtz">
+  <div class="section-label">03 — Acoustics</div>
+  <h2>Helmholtz Equation — Finite Differences</h2>
+
+  <div class="problem-block">
+    <div class="problem-header">
+      <div class="problem-number">04</div>
+      <div>
+        <div class="type-badge badge-acoustic">Harmonic · 1D</div>
+        <h3>1D Acoustic Pressure — Comparison with Analytical Solution</h3>
+      </div>
+    </div>
+    <div class="problem-body">
+      <div class="problem-text">
+        <p>The frequency-domain Helmholtz equation governs acoustic pressure:</p>
+        <div class="equation-box">d²P/dx² + K²P = 0
+K = ω/c = 2πf / 343  (rad/m)</div>
+        <table>
+          <tr><th>Boundary</th><th>Type</th><th>Value</th></tr>
+          <tr><td>x = 0</td><td>Dirichlet</td><td>P = 1 Pa</td></tr>
+          <tr><td>x = L</td><td>Neumann</td><td>v = 0 m/s</td></tr>
+        </table>
+        <p>The Neumann BC translates to −(1/iωρ)·∂P/∂x = 0, applied via backward differences. The complex pressure field is compared with the exact closed-form solution.</p>
+      </div>
+      <div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">MATLAB — Helmholtz 1D</span></div>
+          <pre><span class="cm">% Wavenumber</span>
+c=<span class="num">343</span>; freq=<span class="num">1000</span>;
+K = <span class="num">2</span>*pi*freq/c;
+
+<span class="cm">% FD coefficients</span>
+k1 = <span class="num">1</span>/dx^<span class="num">2</span>;
+k2 = -<span class="num">2</span>/dx^<span class="num">2</span> + K^<span class="num">2</span>;
+k3 = <span class="num">1</span>/dx^<span class="num">2</span>;
+
+<span class="kw">for</span> ii = <span class="num">2</span>:npts-<span class="num">1</span>
+  A(ii,ii-<span class="num">1</span>:ii+<span class="num">1</span>) = [k1 k2 k3];
+<span class="kw">end</span>
+
+<span class="cm">% Neumann at right</span>
+A(<span class="kw">end</span>,<span class="kw">end</span>-<span class="num">1</span>:<span class="kw">end</span>) = ...
+  -<span class="num">1</span>/<span class="num">1i</span>/rho/w*[-<span class="num">1</span>/dx <span class="num">1</span>/dx];
+
+P = A\B;</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="problem-block">
+    <div class="problem-header">
+      <div class="problem-number">05</div>
+      <div>
+        <div class="type-badge badge-acoustic">Harmonic · 2D</div>
+        <h3>2D Acoustic Pressure — 3.5 × 2.0 m Domain</h3>
+      </div>
+    </div>
+    <div class="problem-body">
+      <div class="problem-text">
+        <p>The 2D Helmholtz equation is solved on a 66 × 41 structured point grid:</p>
+        <div class="equation-box">∂²P/∂x² + ∂²P/∂y² + K²P = 0
+f = 1000 Hz,  c = 343 m/s</div>
+        <table>
+          <tr><th>Boundary</th><th>Type</th><th>Value</th></tr>
+          <tr><td>Left</td><td>Dirichlet</td><td>P = 1 Pa</td></tr>
+          <tr><td>Top</td><td>Dirichlet</td><td>P = 1 Pa</td></tr>
+          <tr><td>Right</td><td>Neumann</td><td>v = 0 m/s</td></tr>
+          <tr><td>Bottom</td><td>Neumann</td><td>v = 0 m/s</td></tr>
+        </table>
+        <p>The complex pressure field is plotted as real, imaginary, and absolute values using <code>trisurf</code> with jet colormap.</p>
+      </div>
+      <div>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">MATLAB — 2D Assembly</span></div>
+          <pre><span class="kw">for</span> ii=<span class="num">1</span>:nptx
+ <span class="kw">for</span> ij=<span class="num">1</span>:npty
+  center=(ii-<span class="num">1</span>)*npty+ij;
+  <span class="kw">if</span>     x(center)==<span class="num">0</span>
+    A(center,center)=<span class="num">1</span>; B(center)=<span class="num">1</span>;
+  <span class="kw">elseif</span> y(center)==Ly
+    A(center,center)=<span class="num">1</span>; B(center)=<span class="num">1</span>;
+  <span class="kw">elseif</span> x(center)==Lx
+    A(center,[left center])=[-<span class="num">1</span> <span class="num">1</span>]/dx;
+  <span class="kw">elseif</span> y(center)==<span class="num">0</span>
+    A(center,[center up])=[-<span class="num">1</span> <span class="num">1</span>]/dy;
+  <span class="kw">else</span>
+    A(center,[left center right])=...
+      [<span class="num">1</span> -<span class="num">2</span> <span class="num">1</span>]/dx^<span class="num">2</span>;
+    A(center,[down center up])=...
+      A(center,[down center up])...
+      +[<span class="num">1</span> -<span class="num">2</span> <span class="num">1</span>]/dy^<span class="num">2</span>;
+    A(center,center)+=K^<span class="num">2</span>;
+  <span class="kw">end</span>
+ <span class="kw">end</span>
+<span class="kw">end</span>
+P = A\B;</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEM -->
+<section id="fem">
+  <div class="section-label">04 — FEM Acoustics</div>
+  <h2>2D Acoustic Attenuator — Helmholtz via FEM</h2>
+
+  <div class="problem-block">
+    <div class="problem-header">
+      <div class="problem-number">06</div>
+      <div>
+        <div class="type-badge badge-fem">FEM · MATLAB PDE Modeler</div>
+        <h3>Transmission &amp; Insertion Loss, Octave Bands 125–2000 Hz</h3>
+      </div>
+    </div>
+
+    <p>The acoustic attenuator is modeled using MATLAB's PDE Modeler, solving the Helmholtz equation on a 2D geometry (Figure C) with internal diamond-shaped heterogeneities. The frequency-dependent absorption coefficient is:</p>
+    <div class="equation-box" style="margin-bottom:2rem;">α = [ 0.002f + 0.04·log(f) − (0.0008f)² ] / (2√A₁ + 1)
+Z = ρc·β  (surface impedance)</div>
+
+    <div class="image-grid" style="margin-bottom:1.5rem;">
+      <div>
+        <img src="images/q1.png" alt="Problem geometry" class="result-image">
+        <div class="image-caption">Fig. 2 — Attenuator geometry (Figure C)</div>
+      </div>
+      <div>
+        <img src="images/b1.png" alt="Boundary conditions" class="result-image">
+        <div class="image-caption">Fig. 3 — Boundary condition setup</div>
+      </div>
+    </div>
+
+    <div class="image-grid" style="margin-bottom:1.5rem;">
+      <div>
+        <img src="images/m1.png" alt="FEM Mesh" class="result-image">
+        <div class="image-caption">Fig. 4 — FEM mesh (Step 5: 27,904 nodes, 111,616 triangles)</div>
+      </div>
+      <div>
+        <img src="images/two.png" alt="2D pressure map" class="result-image">
+        <div class="image-caption">Fig. 5 — Absolute pressure |P| at f = 565 Hz</div>
+      </div>
+    </div>
+
+    <div class="image-grid single" style="margin-bottom:2rem;">
+      <div>
+        <img src="images/three.png" alt="3D pressure surface" class="result-image">
+        <div class="image-caption">Fig. 6 — 3D surface plot of |P|</div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:1rem;">Transmission Loss &amp; Insertion Loss Summary</h3>
+    <table>
+      <tr>
+        <th>Octave Band</th>
+        <th>Avg SPL In (dB)</th>
+        <th>Avg SPL Out (dB)</th>
+        <th>TL (dB)</th>
+        <th>IL (dB)</th>
+      </tr>
+      <tr><td>125 Hz</td><td>88.0</td><td>87.0</td><td>1.0</td><td>−0.3</td></tr>
+      <tr><td>250 Hz</td><td>87.1</td><td>86.7</td><td>3.3</td><td>−0.4</td></tr>
+      <tr><td>500 Hz</td><td>84.6</td><td>86.8</td><td>11.9</td><td>2.5</td></tr>
+      <tr><td>1000 Hz</td><td>86.2</td><td>83.9</td><td>9.7</td><td>3.9</td></tr>
+      <tr><td>2000 Hz</td><td>82.3</td><td>86.7</td><td>8.1</td><td>−0.3</td></tr>
+    </table>
+
+    <h3 style="margin-top:2.5rem; margin-bottom:1rem;">Full Written Report</h3>
+    <div class="pdf-container">
+      <div class="pdf-header">
+        <span class="pdf-title">Computational Modeling Work 2 — Written Report.pdf</span>
+        <a href="report.pdf" target="_blank" class="pdf-link">Open in new tab ↗</a>
+      </div>
+      <iframe class="pdf-frame" src="report.pdf" title="Full Report PDF"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <em>Shahariar Ryehan — UC 2024161225</em><br>
+    <em>Pranav Prakasan — UC 2024183416</em><br>
+    Erasmus Mundus WAVES / MEAECS &middot; Universidade de Coimbra &middot; 2024–2025
+  </div>
+  <div class="footer-right">
+    <a href="https://github.com/sryehan/finite-difference-methods_UC_helmholtz" target="_blank">github.com/sryehan ↗</a>
+  </div>
+</footer>
+
+</body>
+</html>
